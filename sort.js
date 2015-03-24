@@ -17,7 +17,7 @@ var util = {
 }
 
 //冒泡排序
-function bubbing(arr) {
+function bubbling(arr) {
     for (var i = 0, len = arr.length; i < len - 1; i++) {
         for (var j = len - 1; j > i; j--) {
             if (arr[j] > arr[j - 1]) {
