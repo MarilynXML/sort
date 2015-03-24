@@ -119,3 +119,16 @@ function shellSort(arr) {
     }
     return arr;
 }
+
+//归并排序 稳定
+function mergeSort(arr){
+    var len=arr.length,
+        floor=Math.floor.apply(Math);
+    for (var i = 0; i < len; i++) {
+        
+    };
+}
+
+function mergeArr(arr){
+
+}
