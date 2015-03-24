@@ -99,4 +99,23 @@ function quickSort(arr, left, right) {
     return arr;
 }
 
-//希尔排序
+//希尔排序 非稳定
+function shellSort(arr) {
+    var arrLen = arr.length;
+    stepSize = Math.floor(arrLen / 2);
+    for (; stepSize > 0; stepSize=Math.floor(stepSize/2)) {
+        var agencyArr = [];
+        for (var i = 0; i < stepSize; i++) {
+            agencyArr[i] = [];
+            for (var k = 0; stepSize * k + i < arrLen; k++) {
+                agencyArr[i].push(arr[stepSize * k + i]);
+            }
+        }
+        arr = [];
+        for (var i = 0; i < agencyArr.length; i++) {
+            insertSort(agencyArr[i]);
+            arr = arr.concat(agencyArr[i]);
+        }
+    }
+    return arr;
+}
