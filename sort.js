@@ -1,11 +1,27 @@
+//实用工具类
+var util = {
+    swap: function(arr, j, i) {
+        //数组相邻元素交换
+        if (arguments.length === 2) {
+            var v = arr[j];
+            arr[j] = arr[j - 1];
+            arr[j - 1] = v;
+        }
+        //根据给定下标交换
+        else {
+            var v = arr[j];
+            arr[j] = arr[i];
+            arr[i] = v;
+        }
+    }
+}
+
 //冒泡排序
 function bubbing(arr) {
     for (var i = 0, len = arr.length; i < len - 1; i++) {
         for (var j = len - 1; j > i; j--) {
             if (arr[j] > arr[j - 1]) {
-                var swop = arr[j - 1];
-                arr[j - 1] = arr[j];
-                arr[j] = swop;
+                util.swap(arr, j);
             }
         }
     }
@@ -18,9 +34,7 @@ function insertSort(arr) {
         var j = i;
         while (true) {
             if (arr[j] < arr[j - 1] && j > 0) {
-                var v = arr[j];
-                arr[j] = arr[j - 1];
-                arr[j - 1] = v;
+                util.swap(arr, j);
                 j--;
             } else {
                 break;
@@ -50,15 +64,39 @@ function selectSort(arr) {
         selectArr = arr.slice(i);
         selectIndex = i + minIndex(selectArr);
         if (i !== selectIndex) {
-            var swop = arr[selectIndex];
-            arr[selectIndex] = arr[i];
-            arr[i] = swop;
+            util.swap(arr, selectIndex, i);
         }
     }
     return arr;
 }
-
 //快速排序
-function quickSort() {
-
+function quickSort(arr, left, right) {
+    var key, lp, rp;
+    key = arr[left];
+    lp = left;
+    rp = right;
+    if (left < right) {
+        while (lp < rp) {
+            while (arr[rp] >= key && lp < rp) {
+                rp--;
+            }
+            if (lp < rp) {
+                arr[lp] = arr[rp];
+                lp++;
+            }
+            while (arr[lp] < key && lp < rp) {
+                lp++;
+            }
+            if (lp < rp) {
+                arr[rp] = arr[lp];
+                rp--;
+            }
+        }
+        arr[lp] = key;
+        quickSort(arr, left, lp - 1);
+        quickSort(arr, rp + 1, right);  
+    }
+    return arr;
 }
+
+//希尔排序
