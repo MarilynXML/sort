@@ -1,3 +1,8 @@
+/*
+    @file 实现基本排序算法
+ */
+
+
 //实用工具类
 var util = {
     swap: function(arr, j, i) {
@@ -69,7 +74,7 @@ function selectSort(arr) {
     }
     return arr;
 }
-//快速排序
+//快速排序 非稳定
 function quickSort(arr, left, right) {
     var key, lp, rp;
     key = arr[left];
@@ -121,14 +126,40 @@ function shellSort(arr) {
 }
 
 //归并排序 稳定
-function mergeSort(arr){
-    var len=arr.length,
-        floor=Math.floor.apply(Math);
-    for (var i = 0; i < len; i++) {
-        
-    };
+function mergeArr(arr, first, mid, last, temp) {
+    var i = first,
+        m = mid,
+        j = mid,
+        n = last,
+        k = 0;
+    while (i < m && j < n) {
+        if (arr[i] <= arr[j]) {
+            temp[k++] = arr[i++];
+        } else {
+            temp[k++] = arr[j++];
+        }
+    }
+    if (i < m) {
+        while (i < m) {
+            temp[k++] = arr[i++];
+        }
+    } else if (j < n) {
+        while (j < n) {
+            temp[k++] = arr[j++];
+        }
+    }
+    for (var i = 0, len = temp.length; i < len; i++) {
+        arr[first + i] = temp[i];
+    }
 }
 
-function mergeArr(arr){
-
+function mergeSort(arr, first, last, temp) {
+    if (first < last - 1) {
+        var mid = Math.round((first + last) / 2);
+        mergeSort(arr, first, mid, temp);
+        mergeSort(arr, mid + 1, last, temp);
+        mergeArr(arr, first, mid, last, temp);
+    }
 }
+
+
