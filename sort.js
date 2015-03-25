@@ -157,3 +157,12 @@ function mergeSort(arr, first, last, temp) {
     }
 }
 
+//二叉排序树
+function Node(data,left,right){
+    this.data=data;
+    this.left=lfet;
+    this.right=right;
+}
+function binaryTree(){
+
+}
