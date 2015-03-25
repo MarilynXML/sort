@@ -128,27 +128,22 @@ function shellSort(arr) {
 //归并排序 稳定
 function mergeArr(arr, first, mid, last, temp) {
     var i = first,
-        m = mid,
         j = mid,
-        n = last,
         k = 0;
-    while (i < m && j < n) {
+    while (i < mid && j < last) {
         if (arr[i] <= arr[j]) {
             temp[k++] = arr[i++];
         } else {
             temp[k++] = arr[j++];
         }
     }
-    if (i < m) {
-        while (i < m) {
-            temp[k++] = arr[i++];
-        }
-    } else if (j < n) {
-        while (j < n) {
-            temp[k++] = arr[j++];
-        }
+    while (i < mid) {
+        temp[k++] = arr[i++];
     }
-    for (var i = 0, len = temp.length; i < len; i++) {
+    while (j < last) {
+        temp[k++] = arr[j++];
+    }
+    for (var i = 0; i < k; i++) {
         arr[first + i] = temp[i];
     }
 }
@@ -161,5 +156,4 @@ function mergeSort(arr, first, last, temp) {
         mergeArr(arr, first, mid, last, temp);
     }
 }
-
 
