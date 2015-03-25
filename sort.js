@@ -152,7 +152,7 @@ function mergeSort(arr, first, last, temp) {
     if (first < last - 1) {
         var mid = Math.round((first + last) / 2);
         mergeSort(arr, first, mid, temp);
-        mergeSort(arr, mid + 1, last, temp);
+        mergeSort(arr, mid, last, temp);
         mergeArr(arr, first, mid, last, temp);
     }
 }
