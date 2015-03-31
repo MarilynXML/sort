@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sort Test</title>
+	<script src="jquery.min.js"></script>
+	<style>
+		.position{
+			padding:10px;
+		}
+		h1{
+			margin-left: 10px;
+			margin-right:10px;
+			margin:0;
+			padding:10px;
+			border:2px dashed red;
+		}
+		.loading{
+			position:fixed;
+			left:0px;
+			top: 0px;
+			height:40px;
+			width:40px;
+			border-radius: 50%;
+			background:red;
+			-webkit-animation:loading 1s infinite;
+			-moz-animation:loading 1s infinite;
+			animation:loading 1s infinite;
+		}
+		@keyframes loading{
+			0%{
+				transform:scale(0.2);
+			}
+			60%{
+				transform:scale(0.8);
+			}
+			80%{
+				transform:scale(0.4);
+			}
+		}
+		@-webkit-keyframes loading{
+			0%{
+				-webkit-transform:scale(0.2);
+			}
+			60%{
+				-webkit-transform:scale(0.8);
+			}
+			80%{
+				-webkit-transform:scale(0.4);
+			}
+		}
+		@-moz-keyframes loading{
+			0%{
+				-moz-transform:scale(0.2);
+			}
+			60%{
+				-moz-transform:scale(0.8);
+			}
+			80%{
+				-moz-transform:scale(0.4);
+			}
+		}
+		.hide{
+			display:none;
+		}
+		iframe{
+			display:block;
+			width:80%;
+			min-height: 600px;
+			margin:0 auto;
+		}
+		.drop-zone{
+			height:200px;
+			line-height: 200px;
+			background:#bbb;
+			color: rgba(0,0,0,0.4);
+			text-align: center;
+		}
+		.img-container>img{
+			width:100px;
+			height:150px;
+		}
+	</style>
+</head>
+<body>
+	<div class="loading"></div>
+	<div class="container hide">
+		<div class="position">
+			<h1 id="shell">归并排序</h1>
+			<input type="file" id="files" name="files[]" multiple>
+			<output id="list">
+				<ul></ul>
+			</output>
+		</div>
+		<div class="drop-zone">将文件拖拽至此</div>
+		<iframe src="http://www.baidu.com/" frameborder="0"></iframe>
+	</div>
+</body>
+<script src="sortT.js"></script>
+</html>
