@@ -6,6 +6,7 @@ function Stack(){
 	this.peek=peek;
 	this.size=size;
 	this.clear=clear;
+	return this;
 }
 
 function push(element){

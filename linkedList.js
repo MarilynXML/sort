@@ -9,11 +9,12 @@ function LinkedList(){
 	this.insertAfter = insertAfter;
 	this.remove = remove;
 	this.display = display;
+	return this;
 }
 
 function find(node,prev){
 	var currNode,prevNode;
-		currNode = this.head;
+		currNode = prevNode = this.head;
 	if(prev){
 		while(currNode){
 			if(currNode == node){
@@ -24,8 +25,9 @@ function find(node,prev){
 			}
 		}
 	}else{
+	console.log(currNode===node);
 		while(currNode){
-			if(currNode == node){
+			if(currNode === node){
 				return currNode;
 			}else{
 				currNode = currNode.next;
@@ -38,8 +40,13 @@ function find(node,prev){
 function insertAfter(node,newElement){
 	var newNode = new Node(newElement),
 		currNode = this.find(node);
-	newNode.next = currNode.next;
-	currNode.next = newNode;
+	if(currNode){
+		newNode.next = currNode.next;
+		currNode.next = newNode;
+		return newNode;
+	}else{
+		return null;
+	}
 }
 
 function display(){

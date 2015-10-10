@@ -17,6 +17,7 @@ function List(){
 	this.currPos=currPos;
 	this.moveTo=moveTo;
 	this.contains=contains;
+	return this;
 }
 
 function append(element){

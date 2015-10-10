@@ -7,6 +7,7 @@ function Queue(){
 	this.toString=toString;
 	this.isEmpty=isEmpty;
 	this.size=size;
+	return this;
 }
 
 function size(){
