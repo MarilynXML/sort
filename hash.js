@@ -1,5 +1,6 @@
-function HashTable(){
-	this.table = new Array(137);
+function HashTable(tableSize){
+	tableSize = tableSize || 137;
+	this.table = new Array(tableSize);
 	this.simpleHash = simpleHash;
 	this.showDistro = showDistro;
 	this.put = put;
