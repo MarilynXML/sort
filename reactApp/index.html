@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>React 基础学习</title>
+		<script src="script/JSXTransformer.js"></script>
+		<script src="script/react.js"></script>
+		<style>
+			.container{
+				width:1040px;
+				line-height: 1.5;
+				margin:0 auto;
+				background-color: #f5f5f5;
+				padding:1em;
+			}
+			.container>p{
+				font-size:1.4em;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>React 学习测试</h1>
+		<div class="container">
+			<div class="hello-world">
+				<p>这个是要被替换了的</p>
+			</div>
+			<div class="comment-container"></div>
+		</div>
+		<script>
+			function func(e){
+				alert('test');
+				e.preventDefault();
+				console.log('submit called');
+			}
+		</script>
+		<script type="text/jsx">
+			
+			var HelloWorld = React.createClass({
+				getDefaultProps:function(){
+					console.log('getDefaultProps:',arguments);
+					return {text:'default props text'};
+				},
+				getInitialState:function(){
+					return {status:'start'};
+				},
+				componentWillUpdate:function(){
+					console.log(arguments);
+				},
+				componentDidMount:function(){
+					console.log('componentDidMount',arguments);
+				},
+				onHandleClick:function(data,evt){
+					console.log(temp=this);
+					console.log('data:',data);
+				},
+				render:function(){
+					return (<p onClick={this.onHandleClick.bind(this,{name:'lds'})} className={this.props.text.substring(5).trim()}>{'props '+this.props.text + 'state ' + this.state.status}</p>);
+				}
+			});
+			React.render(
+				<HelloWorld text = "Hello World" />,
+				document.querySelector('.hello-world')
+			);
+			var CommentList = React.createClass({
+				componentWillUpdate:function(){
+					console.log(arguments);
+				},
+				render:function(){
+					var lists = this.props.list.map(function(val,index){
+						return (<li key = {'key-'+index}>{val}</li>);
+					});
+					return (
+							<ul>
+										{lists}
+							</ul>
+						);
+				}
+			});
+			var Comments = React.createClass({
+				handleSubmit:function(evt){
+					evt.preventDefault();
+					var value = this.refs.listItem.getDOMNode().value;
+					this.refs.listItem.getDOMNode().value = '';
+					this.props.list.push(value);
+					// this.forceUpdate();
+					this.setProps({list:this.props.list});
+					// console.log(window.temp = this);
+					console.log(evt);
+				},
+				render:function(){
+					return (
+							<div>
+									<form action="" method="get" encType="application/x-www-form-urlencoded" onSubmit={this.handleSubmit}>
+											<input type="text" name="listItem" placeholder="input your item" defaultValue="item" ref="listItem" />
+											<input type="submit" value ="提交" />
+									</form>
+									<CommentList list = {this.props.list} />
+							</div>
+						);
+				}
+			});
+			React.render(
+					<Comments list={[1,2,3]}/>,
+					document.querySelector('.comment-container')
+				);
+		</script>
+	</body>
+</html>
