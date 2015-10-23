@@ -176,7 +176,7 @@
 									<span className="text-overflow">{this.state.times}</span>
 									<span className="unlike"><span className="sr-only">答案有问题,否决</span></span>
 								</div>
-								<div className="text-comment">{this.props.text}</div>
+								<div className="text-comment" dangerouslySetInnerHTML={{__html:this.props.text}}></div>
 							</li>
 							);
 				}
