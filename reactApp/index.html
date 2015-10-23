@@ -5,6 +5,7 @@
 		<title>React 基础学习</title>
 		<script src="script/JSXTransformer.js"></script>
 		<script src="script/react.js"></script>
+		<script src="libs/showdown/dist/showdown.js"></script>
 		<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css">
 		<style>
 			.container{
@@ -153,6 +154,7 @@
 				getDefaultProps:function(){
 					return {text:''};
 				},
+
 				onHandleClick:function(evt){
 					switch(evt.target.className){
 						case 'like':
@@ -207,7 +209,7 @@
 					alert('mixins test');
 				}
 			};
-
+			var converter = new showdown.Converter();
 			var Comments = React.createClass({
 				mixins:[mixins],
 				handleSubmit:function(evt){
@@ -215,7 +217,7 @@
 					var value = this.refs.listItem.getDOMNode().value;
 					if(!value.trim())return;
 					this.refs.listItem.getDOMNode().value = '';
-					this.props.list.push(value);
+					this.props.list.push( converter.makeHtml(value));
 					// this.forceUpdate();
 					this.setProps({list:this.props.list});
 					console.log(window.temp = this);
