@@ -5,6 +5,7 @@
 		<title>React 基础学习</title>
 		<script src="script/JSXTransformer.js"></script>
 		<script src="script/react.js"></script>
+		<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css">
 		<style>
 			.container{
 				width:1040px;
@@ -16,9 +17,63 @@
 			.container>p{
 				font-size:1.4em;
 			}
+			.form-horizontal{
+				overflow:hidden;
+			}
+			textarea.form-control{
+				resize:none;
+			}
+			.text-comment{
+				margin-left:40px;
+				padding-top:4px;
+			}
+			.comment-item{
+				padding:5px 0;
+			}
+			.vote{
+				position:relative;
+				height:48px;
+				line-height:48px;
+				width:36px;
+				text-align:center;
+				float:left;
+			}
+			button.btn.like:focus,button.btn.like:active{
+				outline:none;
+			}
+			.like,.unlike{
+				position:absolute;
+				background:transparent url(vote-bg@2x.png) no-repeat;
+				background-size:auto 54px;
+				padding:8px 18px;
+				cursor:pointer;
+			}
+			.like{
+				background-position:0 0;
+				top:0;
+				left:0;
+			}
+			.like:hover{
+				background-position:-36px 0;
+			}
+			.unlike{
+				left:0;
+				bottom:0;
+				background-position:0 bottom;
+			}
+			.unlike:hover{
+				background-position:-36px bottom;
+			}
+			.text-overflow{
+				display:block;
+				white-space:nowrap;
+				text-overflow:ellipsis;
+				overflow:hidden;
+			}
 		</style>
 	</head>
 	<body>
+		<button id="full">全屏</button>
 		<h1>React 学习测试</h1>
 		<div class="container">
 			<div class="hello-world">
@@ -32,10 +87,32 @@
 				e.preventDefault();
 				console.log('submit called');
 			}
+			document.getElementById('full').addEventListener('click',
+				function(){
+					var docElm = document.documentElement;
+		if (docElm.requestFullscreen) {
+		docElm.requestFullscreen();
+		}
+		else if (docElm.msRequestFullscreen) {
+		docElm.msRequestFullscreen();
+		}
+		else if (docElm.mozRequestFullScreen) {
+		docElm.mozRequestFullScreen();
+		}
+		else if (docElm.webkitRequestFullScreen) {
+		docElm.webkitRequestFullScreen();
+		}
+		}, false);
+			
 		</script>
 		<script type="text/jsx">
 			
 			var HelloWorld = React.createClass({
+				statics:{
+					funcStatic:function(){
+						console.log('我是HelloWorld上的静态方法');
+					}
+				},
 				getDefaultProps:function(){
 					console.log('getDefaultProps:',arguments);
 					return {text:'default props text'};
@@ -43,66 +120,128 @@
 				getInitialState:function(){
 					return {status:'start'};
 				},
-				componentWillUpdate:function(){
-					console.log(arguments);
+				componentWillReceiveProps:function(){
+					console.log('receiveProps:',arguments);
 				},
+				componentWillUpdate:function(){
+					console.log('update:',arguments);
+				},
+				// shouldComponentUpdate:function(){
+						// 	console.log('shouldUpdate:',arguments);
+						// 	return true;
+				// },
 				componentDidMount:function(){
 					console.log('componentDidMount',arguments);
 				},
 				onHandleClick:function(data,evt){
 					console.log(temp=this);
 					console.log('data:',data);
+					this.constructor.funcStatic();
 				},
 				render:function(){
-					return (<p onClick={this.onHandleClick.bind(this,{name:'lds'})} className={this.props.text.substring(5).trim()}>{'props '+this.props.text + 'state ' + this.state.status}</p>);
+					return (<p onClick={this.onHandleClick.bind(this,{name:'lds'})} className="lead">{this.props.text}</p>);
 				}
 			});
 			React.render(
-				<HelloWorld text = "Hello World" />,
+				<HelloWorld text = "输入评论：" />,
 				document.querySelector('.hello-world')
 			);
+			var ListItem = React.createClass({
+				getInitialState:function(){
+					return {times:0};
+				},
+				getDefaultProps:function(){
+					return {text:''};
+				},
+				onHandleClick:function(evt){
+					switch(evt.target.className){
+						case 'like':
+							this.setState({times:++this.state.times});
+							break;
+						case 'unlike':
+							this.setState({times:--this.state.times>0 ? this.state.times:0});
+							break;
+						default:
+							break;
+					}
+					console.log(window.listItem = this);
+				},
+				render:function(){
+					return (
+							<li key={this.props.key} className="comment-item clearfix">
+								<div className="vote" onClick={this.onHandleClick}>
+									<span className="like"><span className="sr-only">支持一下</span></span>
+									<span className="text-overflow">{this.state.times}</span>
+									<span className="unlike"><span className="sr-only">答案有问题,否决</span></span>
+								</div>
+								<div className="text-comment">{this.props.text}</div>
+							</li>
+							);
+				}
+			});
 			var CommentList = React.createClass({
+				propTypes: {
+			        list: React.PropTypes.array
+			    },
 				componentWillUpdate:function(){
+					console.log(window.list=this);
 					console.log(arguments);
+				},
+				componentUnMount:function(){
+					console.log('unMount:',arguments);
 				},
 				render:function(){
 					var lists = this.props.list.map(function(val,index){
-						return (<li key = {'key-'+index}>{val}</li>);
-					});
+									return (<ListItem key={'key-'+index} text={val} />);
+							});
 					return (
-							<ul>
-										{lists}
+							<ul className="list-unstyled" onClick={this.onHandleClick}>
+								{lists}
 							</ul>
 						);
 				}
 			});
+					
+			var mixins = {
+				test:function(){
+					alert('mixins test');
+				}
+			};
+
 			var Comments = React.createClass({
+				mixins:[mixins],
 				handleSubmit:function(evt){
 					evt.preventDefault();
 					var value = this.refs.listItem.getDOMNode().value;
+					if(!value.trim())return;
 					this.refs.listItem.getDOMNode().value = '';
 					this.props.list.push(value);
 					// this.forceUpdate();
 					this.setProps({list:this.props.list});
-					// console.log(window.temp = this);
+					console.log(window.temp = this);
 					console.log(evt);
 				},
 				render:function(){
 					return (
 							<div>
-									<form action="" method="get" encType="application/x-www-form-urlencoded" onSubmit={this.handleSubmit}>
-											<input type="text" name="listItem" placeholder="input your item" defaultValue="item" ref="listItem" />
-											<input type="submit" value ="提交" />
-									</form>
-									<CommentList list = {this.props.list} />
+								<form action="" method="post" encType="application/x-www-form-urlencoded" className="form-horizontal clearfix" onSubmit={this.handleSubmit}>
+									<textarea className="form-control" type="text" name="listItem" placeholder="input your comment here" ref="listItem"></textarea>
+									<input type="submit" name="submit" value ="提交" className="btn btn-primary pull-right" />
+								</form>
+								<CommentList list = {this.props.list} />
 							</div>
 						);
 				}
 			});
+			var commentInfoArr = ['第一个评论','需要控制LikeText的那个state除了通过自身state控制外再加上props控制，LikeButton通过改变LikeText的props来控制，需要用到componentWillReceiveProps，代码参考如下：'];
 			React.render(
-					<Comments list={[1,2,3]}/>,
+					<Comments list={commentInfoArr} />,
 					document.querySelector('.comment-container')
 				);
-		</script>
-	</body>
-</html>
+				// var container = document.querySelector(selector);
+				// React.unmountComponentAtNode(container);
+			</script>
+			<script type="text/jsx">
+			</script>
+		</body>
+	</html>
