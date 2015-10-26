@@ -154,8 +154,11 @@
 				getDefaultProps:function(){
 					return {text:''};
 				},
-
+				componentWillUnmount:function(){
+					console.log('listItem-componentWillUnmount');
+				},
 				onHandleClick:function(evt){
+					console.log(evt);
 					switch(evt.target.className){
 						case 'like':
 							this.setState({times:++this.state.times});
@@ -185,9 +188,20 @@
 				propTypes: {
 			        list: React.PropTypes.array
 			    },
-				componentWillUpdate:function(){
-					console.log(window.list=this);
+				componentWillUpdate:function(nextProps,nextState){
+					// console.log('prevProps:',this.props.list.length);
+					// console.log('updateProps:',nextProps);
+					console.log(window.commentList=this);
 					console.log(arguments);
+				},
+				componentWillMount:function(){
+					console.log('commentList-componentWillMount');
+				},
+				componentDidMount:function(){
+					console.log('commentList-componentDidMount');
+				},
+				componentWillReceiveProps:function(nextProp,nextState){
+					console.log('commentList-componentWillReceiveProps');
 				},
 				componentUnMount:function(){
 					console.log('unMount:',arguments);
@@ -207,11 +221,47 @@
 			var mixins = {
 				test:function(){
 					alert('mixins test');
+				},
+				textareaTab:function(){
+					textarea = document.querySelector('form>textarea');
+					textarea.addEventListener('keydown',function(e) {
+					    if(e.keyCode === 9) { // tab was pressed
+					        // get caret position/selection
+					        var start = this.selectionStart;
+					        var end = this.selectionEnd;
+					        console.log('start:',start,'end:',end);
+					       
+					        var value = this.value;
+
+					        // set textarea value to: text before caret + tab + text after caret
+					        this.value = value.substring(0, start)
+					                    + "\t"
+					                    + value.substring(end);
+
+					        // put caret at right position again (add one for the tab)
+					        this.selectionStart = this.selectionEnd = start + 1;
+
+					        // prevent the focus lose
+					        e.preventDefault();
+					    }
+					});
+					
 				}
 			};
 			var converter = new showdown.Converter();
 			var Comments = React.createClass({
 				mixins:[mixins],
+				componentWillMount:function(){
+					this.props.list.forEach(function(item,ind,arr){
+						arr[ind] = converter.makeHtml(item);
+					});
+					console.log(comments=this);
+					console.log('Comments will mount called');
+				},
+				componentDidMount:function(){
+					console.log('comments-componentDidMount');
+					this.textareaTab();
+				},
 				handleSubmit:function(evt){
 					evt.preventDefault();
 					var value = this.refs.listItem.getDOMNode().value;
@@ -226,8 +276,8 @@
 				render:function(){
 					return (
 							<div>
-								<form action="" method="post" encType="application/x-www-form-urlencoded" className="form-horizontal clearfix" onSubmit={this.handleSubmit}>
-									<textarea className="form-control" type="text" name="listItem" placeholder="input your comment here" ref="listItem"></textarea>
+								<form action="" method="post" encType="application/x-www-form-urlencoded" className="form-horizontal clearfix" on onSubmit={this.handleSubmit}>
+									<textarea className="form-control" type="text" name="listItem" rows="4" placeholder="input your comment here" ref="listItem"></textarea>
 									<input type="submit" name="submit" value ="提交" className="btn btn-primary pull-right" />
 								</form>
 								<CommentList list = {this.props.list} />
@@ -244,6 +294,8 @@
 				// React.unmountComponentAtNode(container);
 			</script>
 			<script type="text/jsx">
+				parent=React.createElement(ListItem, {key:'key-'+1, text:'value of text'},
+							child=React.createElement("div", {className: "vote", onClick: this.onHandleClick}));
 			</script>
 		</body>
 	</html>
