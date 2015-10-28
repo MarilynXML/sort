@@ -4,7 +4,8 @@
 		<meta charset="UTF-8">
 		<title>React 基础学习</title>
 		<script src="script/JSXTransformer.js"></script>
-		<script src="script/react.js"></script>
+		<!-- <script src="script/react.js"></script> -->
+		<script src="script/react-with-addons.js"></script>
 		<script src="libs/showdown/dist/showdown.js"></script>
 		<link rel="stylesheet" href="libs/bootstrap/dist/css/bootstrap.min.css">
 		<style>
@@ -30,6 +31,7 @@
 			}
 			.comment-item{
 				padding:5px 0;
+				padding-right:86px;
 			}
 			.vote{
 				position:relative;
@@ -71,6 +73,26 @@
 				text-overflow:ellipsis;
 				overflow:hidden;
 			}
+			.comment-add-enter{
+				opacity:0.01;
+				transition:opacity 1.2s linear;
+			}
+			.comment-add-enter.comment-add-enter-active{
+				opacity:1;
+			}
+			.comment-add-leave{
+				opacity:1;
+				transition:opacity 1.2s linear;
+			}
+			.comment-add-leave.comment-add-leave-active{
+				opacity:0.01;
+			}
+			.close{
+				background-color:#f5f5f5;
+				border:none;
+				float:right;
+				font-size：larger;
+			}
 		</style>
 	</head>
 	<body>
@@ -107,7 +129,8 @@
 			
 		</script>
 		<script type="text/jsx">
-			
+			var Perf = React.addons.Perf;
+			Perf.start();
 			var HelloWorld = React.createClass({
 				statics:{
 					funcStatic:function(){
@@ -174,12 +197,13 @@
 				render:function(){
 					return (
 							<li key={this.props.key} className="comment-item clearfix">
+							<button type="button" className="close remove" data-dismiss="modal"><span aria-hidden="true">×</span><span className="sr-only">Close</span></button>
 								<div className="vote" onClick={this.onHandleClick}>
 									<span className="like"><span className="sr-only">支持一下</span></span>
 									<span className="text-overflow">{this.state.times}</span>
 									<span className="unlike"><span className="sr-only">答案有问题,否决</span></span>
 								</div>
-								<div className="text-comment" dangerouslySetInnerHTML={{__html:this.props.text}}></div>
+								<div className="text-comment" dangerouslySetInnerHTML={{__html:this.props.text}} />
 							</li>
 							);
 				}
@@ -211,9 +235,9 @@
 									return (<ListItem key={'key-'+index} text={val} />);
 							});
 					return (
-							<ul className="list-unstyled" onClick={this.onHandleClick}>
+							<ReactCSSTransitionGroup transitionName="comment-add" component="ul" className="list-unstyled" onClick={this.onHandleClick} >
 								{lists}
-							</ul>
+							</ReactCSSTransitionGroup>
 						);
 				}
 			});
@@ -223,31 +247,25 @@
 					alert('mixins test');
 				},
 				textareaTab:function(){
-					textarea = document.querySelector('form>textarea');
+					var textarea = document.querySelector('form>textarea');
 					textarea.addEventListener('keydown',function(e) {
-					    if(e.keyCode === 9) { // tab was pressed
-					        // get caret position/selection
+					    if(e.keyCode === 9) { 
 					        var start = this.selectionStart;
 					        var end = this.selectionEnd;
 					        console.log('start:',start,'end:',end);
-					       
 					        var value = this.value;
-
-					        // set textarea value to: text before caret + tab + text after caret
 					        this.value = value.substring(0, start)
 					                    + "\t"
 					                    + value.substring(end);
-
-					        // put caret at right position again (add one for the tab)
 					        this.selectionStart = this.selectionEnd = start + 1;
-
-					        // prevent the focus lose
 					        e.preventDefault();
 					    }
 					});
 					
 				}
 			};
+
+			var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 			var converter = new showdown.Converter();
 			var Comments = React.createClass({
 				mixins:[mixins],
@@ -268,15 +286,15 @@
 					if(!value.trim())return;
 					this.refs.listItem.getDOMNode().value = '';
 					this.props.list.push( converter.makeHtml(value));
-					// this.forceUpdate();
 					this.setProps({list:this.props.list});
 					console.log(window.temp = this);
 					console.log(evt);
+					Perf.stop();
 				},
 				render:function(){
 					return (
 							<div>
-								<form action="" method="post" encType="application/x-www-form-urlencoded" className="form-horizontal clearfix" on onSubmit={this.handleSubmit}>
+								<form action="" method="post" encType="application/x-www-form-urlencoded" className="form-horizontal clearfix" name='formComment' onSubmit={this.handleSubmit}>
 									<textarea className="form-control" type="text" name="listItem" rows="4" placeholder="input your comment here" ref="listItem"></textarea>
 									<input type="submit" name="submit" value ="提交" className="btn btn-primary pull-right" />
 								</form>
