@@ -103,6 +103,7 @@
 				<p>这个是要被替换了的</p>
 			</div>
 			<div class="comment-container"></div>
+			<div class="lists"></div>
 		</div>
 		<script>
 			function func(e){
@@ -180,6 +181,10 @@
 				componentWillUnmount:function(){
 					console.log('listItem-componentWillUnmount');
 				},
+				shouldComponentUpdate:function(){
+					console.log('shouldComponentUpdate',arguments);
+					return true;
+				},
 				onHandleClick:function(evt){
 					console.log(evt);
 					switch(evt.target.className){
@@ -194,10 +199,26 @@
 					}
 					console.log(window.listItem = this);
 				},
+				removeComment:function(evt){
+					var index,
+						domNode = this.getDOMNode(),
+						parentElementChildren = domNode.parentElement.children;
+					for(var i=0;i<parentElementChildren.length;i++){
+						if(domNode===parentElementChildren[i]){
+							index=i;
+							console.log('this is for deleted index',index);
+							this.props.removeComment(index);
+							break;
+						}
+					}
+					// console.log(evt.currentTarget);
+					// var comment = evt.currentTarget.parentElement;
+					// comment.parentElement.removeChild(comment);
+				},
 				render:function(){
 					return (
 							<li key={this.props.key} className="comment-item clearfix">
-							<button type="button" className="close remove" data-dismiss="modal"><span aria-hidden="true">×</span><span className="sr-only">Close</span></button>
+								<button type="button" className="close remove" data-dismiss="modal" onClick={this.removeComment}><span aria-hidden="true">×</span><span className="sr-only">Close</span></button>
 								<div className="vote" onClick={this.onHandleClick}>
 									<span className="like"><span className="sr-only">支持一下</span></span>
 									<span className="text-overflow">{this.state.times}</span>
@@ -212,12 +233,22 @@
 				propTypes: {
 			        list: React.PropTypes.array
 			    },
+			    getInitialState:function(){
+			    	return {
+			    		times:0,
+			    		another:'another'
+			    	};
+			    },
 				componentWillUpdate:function(nextProps,nextState){
 					// console.log('prevProps:',this.props.list.length);
 					// console.log('updateProps:',nextProps);
 					console.log(window.commentList=this);
 					console.log(arguments);
 				},
+				// shouldComponentUpdate:function(){
+				// 	console.log('shouldComponentUpdate',arguments);
+				// 	return true;
+				// },
 				componentWillMount:function(){
 					console.log('commentList-componentWillMount');
 				},
@@ -231,8 +262,9 @@
 					console.log('unMount:',arguments);
 				},
 				render:function(){
+					var self = this;
 					var lists = this.props.list.map(function(val,index){
-									return (<ListItem key={'key-'+index} text={val} />);
+									return (<ListItem key={'key-'+index} text={val} removeComment={self.props.removeComment} />);
 							});
 					return (
 							<ReactCSSTransitionGroup transitionName="comment-add" component="ul" className="list-unstyled" onClick={this.onHandleClick} >
@@ -268,7 +300,12 @@
 			var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 			var converter = new showdown.Converter();
 			var Comments = React.createClass({
-				mixins:[mixins],
+				mixins:[mixins,React.addons.LinkedStateMixin],
+				getInitialState:function(){
+					return {
+						comment:''
+					};
+				},
 				componentWillMount:function(){
 					this.props.list.forEach(function(item,ind,arr){
 						arr[ind] = converter.makeHtml(item);
@@ -282,23 +319,30 @@
 				},
 				handleSubmit:function(evt){
 					evt.preventDefault();
-					var value = this.refs.listItem.getDOMNode().value;
+					var value = this.refs.textarea.getDOMNode().value;
 					if(!value.trim())return;
-					this.refs.listItem.getDOMNode().value = '';
-					this.props.list.push( converter.makeHtml(value));
+					this.refs.textarea.getDOMNode().value = '';
+					this.setState({comment:''});
+					this.props.list.push(converter.makeHtml(value));
 					this.setProps({list:this.props.list});
 					console.log(window.temp = this);
 					console.log(evt);
 					Perf.stop();
 				},
+				removeComment:function(index){
+					this.props.list.splice(index,1);
+					this.setProps({
+						list:this.props.list
+					});
+				},
 				render:function(){
 					return (
 							<div>
 								<form action="" method="post" encType="application/x-www-form-urlencoded" className="form-horizontal clearfix" name='formComment' onSubmit={this.handleSubmit}>
-									<textarea className="form-control" type="text" name="listItem" rows="4" placeholder="input your comment here" ref="listItem"></textarea>
+									<textarea valueLink = {this.linkState('comment')} className="form-control" type="text" name="textarea" rows="4" placeholder="input your comment here" ref="textarea"></textarea>
 									<input type="submit" name="submit" value ="提交" className="btn btn-primary pull-right" />
 								</form>
-								<CommentList list = {this.props.list} />
+								<CommentList list = {this.props.list} removeComment = {this.removeComment} />
 							</div>
 						);
 				}
@@ -314,6 +358,59 @@
 			<script type="text/jsx">
 				parent=React.createElement(ListItem, {key:'key-'+1, text:'value of text'},
 							child=React.createElement("div", {className: "vote", onClick: this.onHandleClick}));
+			</script>
+			<script type="text/jsx">
+				var Lists = React.createClass({
+					getInitialState:function(){
+						var style={
+							maxWidth:100,
+						};
+						return {
+							lists:[{
+								src:'image/1.jpg',
+								href:'index.html',
+								title:'images-1',
+								style:style
+							},
+							{
+								src:'image/2.jpg',
+								href:'http://www.baidu.com',
+								title:'images-2',
+								style:style
+							},
+							{
+								src:'image/3.jpg',
+								href:'http://google.com.hk',
+								title:'image-3',
+								style:style
+							}]
+						};
+					},
+					render:function(){
+						var lists = this.state.lists.map(function(item,index){
+							return (
+								<li><a href={item.href} title={item.title}><Image src={item.src}  style={item.style} /></a></li>
+							);
+						});
+						console.log(lists);
+						return(
+							<ul>
+								{lists}
+							</ul>
+						);
+					}
+				});
+				var Image = React.createClass({
+					render:function(){
+						return (
+							<img src={this.props.src} style={this.props.style}/>
+						);						
+					}
+				});
+				React.render(
+					<Lists />,
+					document.querySelector('.lists')
+				);
 			</script>
 		</body>
 	</html>
